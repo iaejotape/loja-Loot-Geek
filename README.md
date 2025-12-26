@@ -478,13 +478,15 @@ O projeto foi desenvolvido com mobile-first e é totalmente responsivo:
 
 ## 👨‍💻 Autor
 
-Desenvolvido com ❤️ e muito ☕ por **Loot Geek Team**
+Desenvolvido com ❤️ e muito ☕ por **João Pedro Damasceno**
 
 ---
 
 ## 📄 Licença
 
-Este projeto está sob a licença MIT. Sinta-se livre para usar, modificar e distribuir.
+© 2025 Loot Geek. Todos os direitos reservados.
+
+Este projeto é proprietário e privado. Não é permitido copiar, modificar, distribuir ou usar qualquer parte deste código sem autorização expressa do autor.
 
 ---
 
