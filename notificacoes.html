@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Notificações - Loot Geek</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header
+        class="topbar d-flex align-items-center justify-content-between gap-3 flex-wrap mb-4"
+      >
+        <a
+          href="index.html"
+          class="brand d-inline-flex align-items-center gap-2 text-decoration-none"
+        >
+          <span class="logo-icon logo-icon--image">
+            <img src="./img/logo.svg" alt="logo" />
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2">
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label="Favoritos"
+            id="favoritosBtn"
+          >
+            <i class="bi bi-heart"></i>
+          </button>
+
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label="Perfil"
+            id="perfilBtn"
+          >
+            <i class="bi bi-person-circle"></i>
+          </button>
+
+          <button
+            class="btn btn-icon position-relative"
+            id="cartBtn"
+            type="button"
+            aria-label="Carrinho"
+          >
+            <i class="bi bi-cart3"></i>
+            <span class="badge-notification" id="cartCount">0</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="mb-3">
+        <a class="text-decoration-none" href="index.html">
+          <i class="bi bi-arrow-left me-1"></i>
+          Voltar para a loja
+        </a>
+      </div>
+
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3 fw-semibold mb-0">Notificações</h1>
+        <button
+          class="btn btn-sm btn-outline-secondary"
+          id="marcarTodasLidasBtn"
+        >
+          <i class="bi bi-check-all me-1"></i>
+          Marcar todas como lidas
+        </button>
+      </div>
+
+      <div id="notificacoesLista">
+        <!-- Renderizado via JavaScript -->
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const cartCount = document.getElementById("cartCount");
+        const notificacoesLista = document.getElementById("notificacoesLista");
+
+        atualizarContadorCarrinho(cartCount);
+
+        // Notificações de exemplo
+        const notificacoes = [
+          {
+            id: 1,
+            tipo: "pedido",
+            titulo: "Pedido confirmado",
+            mensagem: "Seu pedido #1234 foi confirmado e está sendo preparado",
+            data: "Há 2 horas",
+            lida: false,
+            icone: "bi-check-circle",
+            cor: "text-success",
+          },
+          {
+            id: 2,
+            tipo: "promocao",
+            titulo: "Promoção especial",
+            mensagem: "30% de desconto em todos os controles até amanhã",
+            data: "Há 5 horas",
+            lida: false,
+            icone: "bi-tag",
+            cor: "text-primary",
+          },
+          {
+            id: 3,
+            tipo: "estoque",
+            titulo: "Produto disponível",
+            mensagem: "PS5 voltou ao estoque! Garanta já o seu",
+            data: "Há 1 dia",
+            lida: false,
+            icone: "bi-box-seam",
+            cor: "text-warning",
+          },
+          {
+            id: 4,
+            tipo: "conta",
+            titulo: "Bem-vindo!",
+            mensagem:
+              "Sua conta foi criada com sucesso. Aproveite nossas ofertas",
+            data: "Há 2 dias",
+            lida: true,
+            icone: "bi-person-check",
+            cor: "text-info",
+          },
+        ];
+
+        function renderizarNotificacoes() {
+          if (notificacoes.length === 0) {
+            notificacoesLista.innerHTML = `
+              <div class="card product-card">
+                <div class="card-body text-center py-5">
+                  <i class="bi bi-bell-slash display-1 text-muted mb-3"></i>
+                  <h5 class="fw-semibold mb-2">Nenhuma notificação</h5>
+                  <p class="text-muted mb-0">Quando houver novidades, você será notificado aqui</p>
+                </div>
+              </div>
+            `;
+            return;
+          }
+
+          notificacoesLista.innerHTML = notificacoes
+            .map((notif) => {
+              const classeLida = notif.lida ? "opacity-75" : "";
+              const indicadorNaoLida = notif.lida
+                ? ""
+                : `<span class="badge bg-primary rounded-circle" style="width: 8px; height: 8px;"></span>`;
+
+              return `
+              <div class="card product-card mb-3 ${classeLida}" data-notif-id="${
+                notif.id
+              }">
+                <div class="card-body">
+                  <div class="d-flex gap-3">
+                    <div class="flex-shrink-0">
+                      <div class="rounded-circle d-flex align-items-center justify-content-center ${
+                        notif.cor
+                      }" style="width: 48px; height: 48px; background-color: var(--app-surface-2);">
+                        <i class="bi ${notif.icone} fs-5"></i>
+                      </div>
+                    </div>
+                    <div class="flex-grow-1">
+                      <div class="d-flex justify-content-between align-items-start mb-1">
+                        <h6 class="fw-semibold mb-0">${notif.titulo}</h6>
+                        ${indicadorNaoLida}
+                      </div>
+                      <p class="text-muted small mb-1">${notif.mensagem}</p>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <span class="text-muted small">${notif.data}</span>
+                        ${
+                          !notif.lida
+                            ? `<button class="btn btn-sm btn-link text-decoration-none p-0" data-marcar-lida="${notif.id}">Marcar como lida</button>`
+                            : ""
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+            })
+            .join("");
+        }
+
+        // Marcar como lida
+        notificacoesLista.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-marcar-lida]");
+          if (btn) {
+            const id = parseInt(btn.dataset.marcarLida);
+            const notif = notificacoes.find((n) => n.id === id);
+            if (notif) {
+              notif.lida = true;
+              renderizarNotificacoes();
+            }
+          }
+        });
+
+        // Marcar todas como lidas
+        document
+          .getElementById("marcarTodasLidasBtn")
+          .addEventListener("click", () => {
+            notificacoes.forEach((n) => (n.lida = true));
+            renderizarNotificacoes();
+            showToast("Todas as notificações foram marcadas como lidas");
+          });
+
+        // Navegação
+        document.getElementById("cartBtn").addEventListener("click", () => {
+          window.location.href = "carrinho.html";
+        });
+        document
+          .getElementById("favoritosBtn")
+          .addEventListener("click", () => {
+            window.location.href = "favoritos.html";
+          });
+        document.getElementById("perfilBtn").addEventListener("click", () => {
+          window.location.href = "perfil.html";
+        });
+
+        renderizarNotificacoes();
+      });
+    </script>
+  </body>
+</html>

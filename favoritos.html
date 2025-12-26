@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Favoritos - Loot Geek</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header
+        class="topbar d-flex align-items-center justify-content-between gap-3 flex-wrap mb-4"
+      >
+        <a
+          href="index.html"
+          class="brand d-inline-flex align-items-center gap-2 text-decoration-none"
+        >
+          <span class="logo-icon logo-icon--image">
+            <img src="./img/logo.svg" alt="logo" />
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2">
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label="Perfil"
+            id="perfilBtn"
+          >
+            <i class="bi bi-person-circle"></i>
+          </button>
+
+          <button
+            class="btn btn-icon position-relative"
+            type="button"
+            aria-label="Notificações"
+            id="notificacoesBtn"
+          >
+            <i class="bi bi-bell"></i>
+            <span class="badge-notification">3</span>
+          </button>
+          <button
+            class="btn btn-icon position-relative"
+            id="cartBtn"
+            type="button"
+            aria-label="Carrinho"
+          >
+            <i class="bi bi-cart3"></i>
+            <span class="badge-notification" id="cartCount">0</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="mb-3">
+        <a class="text-decoration-none" href="index.html">
+          <i class="bi bi-arrow-left me-1"></i>
+          Voltar para a loja
+        </a>
+      </div>
+
+      <h1 class="h3 fw-semibold mb-4">Meus Favoritos</h1>
+
+      <div class="row g-4" id="favoritosGrid">
+        <!-- Renderizado via JavaScript -->
+      </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Verificar autenticação
+        const usuario = obterUsuarioLogado();
+        if (!usuario) {
+          window.location.href = "login.html?redirect=favoritos.html";
+          return;
+        }
+
+        const produtos = obterProdutosDaLoja();
+        const favoritosGrid = document.getElementById("favoritosGrid");
+        const cartCount = document.getElementById("cartCount");
+
+        atualizarContadorCarrinho(cartCount);
+
+        function renderizarFavoritos() {
+          const favoritos = obterFavoritos();
+          const produtosFavoritos = produtos.filter((p) =>
+            favoritos.includes(p.id)
+          );
+
+          if (produtosFavoritos.length === 0) {
+            favoritosGrid.innerHTML = `
+              <div class="col-12">
+                <div class="card product-card">
+                  <div class="card-body text-center py-5">
+                    <i class="bi bi-heart display-1 text-muted mb-3"></i>
+                    <h5 class="fw-semibold mb-2">Nenhum favorito ainda</h5>
+                    <p class="text-muted mb-4">Salve produtos para acessá-los facilmente depois</p>
+                    <a href="index.html" class="btn btn-primary">
+                      <i class="bi bi-shop me-2"></i>
+                      Ir para a loja
+                    </a>
+                  </div>
+                </div>
+              </div>
+            `;
+            return;
+          }
+
+          favoritosGrid.innerHTML = produtosFavoritos
+            .map(gerarCardFavoritoHTML)
+            .join("");
+        }
+
+        function gerarCardFavoritoHTML(produto) {
+          const badges = [];
+          if (produto.condicao) {
+            badges.push(
+              `<span class="badge product-badge product-condition">${escapeHTML(
+                produto.condicao
+              )}</span>`
+            );
+          }
+          if (produto.tipoConta) {
+            badges.push(
+              `<span class="badge product-badge product-account">${escapeHTML(
+                produto.tipoConta
+              )}</span>`
+            );
+          }
+
+          const badgesHTML = badges.length
+            ? `<div class="d-flex flex-wrap gap-1 mb-2 product-badges">${badges.join(
+                ""
+              )}</div>`
+            : "";
+
+          return `
+            <div class="col-6 col-md-4 col-lg-3">
+              <div class="card product-card h-100">
+                <div class="card-img-wrapper position-relative">
+                  <img src="${escapeHTML(
+                    produto.imagem
+                  )}" class="card-img-top" alt="${escapeHTML(produto.nome)}" />
+                  <button class="btn btn-wishlist position-absolute active" type="button" data-remover-favorito="${escapeHTML(
+                    produto.id
+                  )}">
+                    <i class="bi bi-heart-fill"></i>
+                  </button>
+                </div>
+                <div class="card-body">
+                  <h5 class="card-title product-name">${escapeHTML(
+                    produto.nome
+                  )}</h5>
+                  <p class="text-muted small mb-1 product-category">${escapeHTML(
+                    produto.categoriaRotulo || produto.categoria
+                  )}</p>
+                  ${badgesHTML}
+                  <p class="product-price fw-bold mb-3">${formatarPrecoBRL(
+                    produto.preco
+                  )}</p>
+                  <a href="produto.html?id=${escapeHTML(
+                    produto.id
+                  )}" class="btn btn-primary w-100">
+                    <i class="bi bi-eye me-2"></i>
+                    Ver detalhes
+                  </a>
+                </div>
+              </div>
+            </div>
+          `.trim();
+        }
+
+        // Remover dos favoritos
+        favoritosGrid.addEventListener("click", (e) => {
+          const btn = e.target.closest("[data-remover-favorito]");
+          if (btn) {
+            e.preventDefault();
+            const produtoId = btn.dataset.removerFavorito;
+            removerDosFavoritos(produtoId);
+            renderizarFavoritos();
+            showToast("Removido dos favoritos");
+          }
+        });
+
+        // Navegação
+        document.getElementById("cartBtn").addEventListener("click", () => {
+          window.location.href = "carrinho.html";
+        });
+        document.getElementById("perfilBtn").addEventListener("click", () => {
+          window.location.href = "perfil.html";
+        });
+        document
+          .getElementById("notificacoesBtn")
+          .addEventListener("click", () => {
+            window.location.href = "notificacoes.html";
+          });
+
+        renderizarFavoritos();
+      });
+    </script>
+  </body>
+</html>

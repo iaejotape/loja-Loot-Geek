@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="pt-br" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Carrinho - Loot Geek</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <main class="main-content">
+      <!-- Top Bar -->
+      <header
+        class="topbar d-flex align-items-center justify-content-between gap-3 flex-wrap mb-4"
+      >
+        <a
+          href="index.html"
+          class="brand d-inline-flex align-items-center gap-2 text-decoration-none"
+        >
+          <span class="logo-icon logo-icon--image">
+            <img src="./img/logo.svg" alt="logo" />
+          </span>
+        </a>
+
+        <div class="d-flex align-items-center gap-2">
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label="Favoritos"
+            id="favoritosBtn"
+          >
+            <i class="bi bi-heart"></i>
+          </button>
+
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label="Perfil"
+            id="perfilBtn"
+          >
+            <i class="bi bi-person-circle"></i>
+          </button>
+
+          <button
+            class="btn btn-icon position-relative"
+            type="button"
+            aria-label="Notificações"
+            id="notificacoesBtn"
+          >
+            <i class="bi bi-bell"></i>
+            <span class="badge-notification">3</span>
+          </button>
+        </div>
+      </header>
+
+      <div class="mb-3">
+        <a class="text-decoration-none" href="index.html">
+          <i class="bi bi-arrow-left me-1"></i>
+          Voltar para a loja
+        </a>
+      </div>
+
+      <h1 class="h3 fw-semibold mb-4">Meu Carrinho</h1>
+
+      <div class="row g-4">
+        <div class="col-12 col-lg-8">
+          <div id="carrinhoItens">
+            <!-- Renderizado via JavaScript -->
+          </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+          <div class="card product-card position-sticky" style="top: 20px">
+            <div class="card-body">
+              <h5 class="fw-semibold mb-3">Resumo do pedido</h5>
+
+              <div class="d-flex justify-content-between mb-2">
+                <span class="text-muted">Subtotal</span>
+                <span id="subtotal">R$ 0,00</span>
+              </div>
+
+              <div
+                class="d-flex justify-content-between mb-3 pb-3 border-bottom"
+              >
+                <span class="text-muted">Frete</span>
+                <span class="text-success">Grátis</span>
+              </div>
+
+              <div class="d-flex justify-content-between mb-4">
+                <span class="fw-semibold">Total</span>
+                <span class="fw-bold" id="total">R$ 0,00</span>
+              </div>
+
+              <button class="btn btn-primary w-100" id="finalizarCompraBtn">
+                <i class="bi bi-check-circle me-2"></i>
+                Finalizar compra
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="row g-4">
+          <div class="col-12 col-md-4">
+            <div class="footer-brand mb-3">
+              <span class="logo-icon logo-icon--image">
+                <img src="./img/logo.svg" alt="logo" />
+              </span>
+            </div>
+            <p class="footer-description">
+              Sua loja confiável de produtos digitais e games. Qualidade e
+              entrega rápida.
+            </p>
+          </div>
+
+          <div class="col-6 col-md-2">
+            <h6 class="footer-title">Navegação</h6>
+            <ul class="footer-links">
+              <li><a href="index.html">Início</a></li>
+              <li><a href="index.html#produtos">Catálogo</a></li>
+              <li><a href="favoritos.html">Favoritos</a></li>
+              <li><a href="perfil.html">Minha Conta</a></li>
+            </ul>
+          </div>
+
+          <div class="col-6 col-md-2">
+            <h6 class="footer-title">Suporte</h6>
+            <ul class="footer-links">
+              <li><a href="#faq">FAQ</a></li>
+              <li><a href="#ajuda">Central de Ajuda</a></li>
+              <li><a href="#contato">Fale Conosco</a></li>
+            </ul>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <h6 class="footer-title">Atendimento</h6>
+            <p class="footer-text mb-2">
+              <i class="bi bi-whatsapp me-2"></i>
+              WhatsApp: (89) 99432-5080
+            </p>
+            <p class="footer-text mb-2">
+              <i class="bi bi-envelope me-2"></i>
+              contato@lootgeek.com
+            </p>
+            <p class="footer-text">
+              <i class="bi bi-clock me-2"></i>
+              Seg a Sex: 9h às 18h
+            </p>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div
+            class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3"
+          >
+            <p class="footer-copyright mb-0">
+              © 2025 Loot Geek. Todos os direitos reservados.
+            </p>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-shield-check text-success"></i>
+              <span class="footer-text">Compra Segura</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- WhatsApp Floating Button -->
+    <a
+      href="https://wa.me/5589994325080"
+      target="_blank"
+      class="whatsapp-float"
+      aria-label="WhatsApp"
+    >
+      <i class="bi bi-whatsapp"></i>
+    </a>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="script.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        // Verificar autenticação
+        const usuario = obterUsuarioLogado();
+        if (!usuario) {
+          window.location.href = "login.html?redirect=carrinho.html";
+          return;
+        }
+
+        const produtos = obterProdutosDaLoja();
+        const carrinhoItens = document.getElementById("carrinhoItens");
+        const subtotalEl = document.getElementById("subtotal");
+        const totalEl = document.getElementById("total");
+        const finalizarCompraBtn =
+          document.getElementById("finalizarCompraBtn");
+
+        function renderizarCarrinho() {
+          const carrinho = obterCarrinho();
+
+          if (carrinho.length === 0) {
+            carrinhoItens.innerHTML = `
+              <div class="card product-card">
+                <div class="card-body text-center py-5">
+                  <i class="bi bi-cart3 display-1 text-muted mb-3"></i>
+                  <h5 class="fw-semibold mb-2">Seu carrinho está vazio</h5>
+                  <p class="text-muted mb-4">Adicione produtos para começar suas compras</p>
+                  <a href="index.html" class="btn btn-primary">
+                    <i class="bi bi-shop me-2"></i>
+                    Ir para a loja
+                  </a>
+                </div>
+              </div>
+            `;
+            subtotalEl.textContent = "R$ 0,00";
+            totalEl.textContent = "R$ 0,00";
+            return;
+          }
+
+          let subtotal = 0;
+          const itensHTML = carrinho
+            .map((item) => {
+              const produto = produtos.find((p) => p.id === item.id);
+              if (!produto) return "";
+
+              let preco = produto.preco;
+              let nomeVariante = "";
+
+              if (item.varianteId && Array.isArray(produto.versoes)) {
+                const variante = produto.versoes.find(
+                  (v) => v.id === item.varianteId
+                );
+                if (variante) {
+                  preco = variante.preco;
+                  nomeVariante = variante.nome;
+                }
+              }
+
+              const precoTotal = preco * item.quantidade;
+              subtotal += precoTotal;
+
+              return `
+              <div class="card product-card mb-3">
+                <div class="card-body">
+                  <div class="row g-3 align-items-center">
+                    <div class="col-3 col-md-2">
+                      <img src="${escapeHTML(
+                        produto.imagem
+                      )}" alt="${escapeHTML(
+                produto.nome
+              )}" class="img-fluid rounded" />
+                    </div>
+                    <div class="col-9 col-md-10">
+                      <div class="d-flex justify-content-between align-items-start mb-2">
+                        <div>
+                          <h6 class="fw-semibold mb-1">${escapeHTML(
+                            produto.nome
+                          )}</h6>
+                          ${
+                            nomeVariante
+                              ? `<p class="text-muted small mb-0">${escapeHTML(
+                                  nomeVariante
+                                )}</p>`
+                              : ""
+                          }
+                        </div>
+                        <button class="btn btn-sm btn-outline-danger" data-remover="${escapeHTML(
+                          item.chave
+                        )}">
+                          <i class="bi bi-trash"></i>
+                        </button>
+                      </div>
+                      <div class="d-flex justify-content-between align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                          <button class="btn btn-sm btn-outline-secondary" data-diminuir="${escapeHTML(
+                            item.chave
+                          )}">
+                            <i class="bi bi-dash"></i>
+                          </button>
+                          <span class="fw-semibold">${item.quantidade}</span>
+                          <button class="btn btn-sm btn-outline-secondary" data-aumentar="${escapeHTML(
+                            item.chave
+                          )}">
+                            <i class="bi bi-plus"></i>
+                          </button>
+                        </div>
+                        <div class="text-end">
+                          <div class="fw-bold">${formatarPrecoBRL(
+                            precoTotal
+                          )}</div>
+                          <div class="text-muted small">${formatarPrecoBRL(
+                            preco
+                          )} cada</div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            `;
+            })
+            .join("");
+
+          carrinhoItens.innerHTML = itensHTML;
+          subtotalEl.textContent = formatarPrecoBRL(subtotal);
+          totalEl.textContent = formatarPrecoBRL(subtotal);
+        }
+
+        // Eventos de controle do carrinho
+        carrinhoItens.addEventListener("click", (e) => {
+          const btnRemover = e.target.closest("[data-remover]");
+          const btnDiminuir = e.target.closest("[data-diminuir]");
+          const btnAumentar = e.target.closest("[data-aumentar]");
+
+          if (btnRemover) {
+            const chave = btnRemover.dataset.remover;
+            let carrinho = obterCarrinho();
+            carrinho = carrinho.filter((item) => item.chave !== chave);
+            salvarCarrinho(carrinho);
+            renderizarCarrinho();
+            showToast("Item removido do carrinho");
+          } else if (btnDiminuir) {
+            const chave = btnDiminuir.dataset.diminuir;
+            let carrinho = obterCarrinho();
+            const item = carrinho.find((i) => i.chave === chave);
+            if (item) {
+              if (item.quantidade > 1) {
+                item.quantidade--;
+                salvarCarrinho(carrinho);
+                renderizarCarrinho();
+              } else {
+                carrinho = carrinho.filter((i) => i.chave !== chave);
+                salvarCarrinho(carrinho);
+                renderizarCarrinho();
+                showToast("Item removido do carrinho");
+              }
+            }
+          } else if (btnAumentar) {
+            const chave = btnAumentar.dataset.aumentar;
+            let carrinho = obterCarrinho();
+            const item = carrinho.find((i) => i.chave === chave);
+            if (item) {
+              item.quantidade++;
+              salvarCarrinho(carrinho);
+              renderizarCarrinho();
+            }
+          }
+        });
+
+        finalizarCompraBtn.addEventListener("click", () => {
+          const carrinho = obterCarrinho();
+          if (carrinho.length > 0) {
+            showToast("Compra finalizada com sucesso!");
+            salvarCarrinho([]);
+            setTimeout(() => {
+              window.location.href = "index.html";
+            }, 1500);
+          }
+        });
+
+        // Navegação
+        document
+          .getElementById("favoritosBtn")
+          .addEventListener("click", () => {
+            window.location.href = "favoritos.html";
+          });
+        document.getElementById("perfilBtn").addEventListener("click", () => {
+          window.location.href = "perfil.html";
+        });
+        document
+          .getElementById("notificacoesBtn")
+          .addEventListener("click", () => {
+            window.location.href = "notificacoes.html";
+          });
+
+        renderizarCarrinho();
+      });
+    </script>
+  </body>
+</html>

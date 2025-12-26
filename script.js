@@ -3,6 +3,412 @@
 // JavaScript Functionality
 // ========================================
 
+// ========================================
+// AUTENTICAÇÃO (localStorage) - ESCOPO GLOBAL
+// ========================================
+function obterUsuarioLogado() {
+  try {
+    const raw = localStorage.getItem("lootGeekUsuario");
+    return raw ? JSON.parse(raw) : null;
+  } catch {
+    return null;
+  }
+}
+
+function salvarUsuarioLogado(usuario) {
+  localStorage.setItem("lootGeekUsuario", JSON.stringify(usuario));
+}
+
+function realizarLogin(email, senha) {
+  const usuarios = obterUsuariosCadastrados();
+  const usuario = usuarios.find((u) => u.email === email && u.senha === senha);
+  if (usuario) {
+    salvarUsuarioLogado({ email: usuario.email, nome: usuario.nome });
+    return true;
+  }
+  return false;
+}
+
+function realizarRegistro(nome, email, senha) {
+  const usuarios = obterUsuariosCadastrados();
+  const jaExiste = usuarios.some((u) => u.email === email);
+  if (jaExiste) return false;
+
+  usuarios.push({ nome, email, senha });
+  salvarUsuariosCadastrados(usuarios);
+  salvarUsuarioLogado({ email, nome });
+  return true;
+}
+
+function realizarLogout() {
+  localStorage.removeItem("lootGeekUsuario");
+}
+
+function obterUsuariosCadastrados() {
+  try {
+    const raw = localStorage.getItem("lootGeekUsuarios");
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function salvarUsuariosCadastrados(usuarios) {
+  localStorage.setItem("lootGeekUsuarios", JSON.stringify(usuarios));
+}
+
+function verificarAutenticacao(redirecionarPara = "login.html") {
+  const usuario = obterUsuarioLogado();
+  if (!usuario) {
+    window.location.href = redirecionarPara;
+    return false;
+  }
+  return true;
+}
+
+// ========================================
+// FAVORITOS (localStorage) - ESCOPO GLOBAL
+// ========================================
+function obterFavoritos() {
+  try {
+    const raw = localStorage.getItem("lootGeekFavoritos");
+    const favoritos = raw ? JSON.parse(raw) : [];
+    return Array.isArray(favoritos) ? favoritos : [];
+  } catch {
+    return [];
+  }
+}
+
+function salvarFavoritos(favoritos) {
+  localStorage.setItem("lootGeekFavoritos", JSON.stringify(favoritos));
+}
+
+function adicionarAosFavoritos(produtoId) {
+  const favoritos = obterFavoritos();
+  if (!favoritos.includes(produtoId)) {
+    favoritos.push(produtoId);
+    salvarFavoritos(favoritos);
+    return true;
+  }
+  return false;
+}
+
+function removerDosFavoritos(produtoId) {
+  const favoritos = obterFavoritos();
+  const novos = favoritos.filter((id) => id !== produtoId);
+  salvarFavoritos(novos);
+  return favoritos.length !== novos.length;
+}
+
+function estaNosForitos(produtoId) {
+  return obterFavoritos().includes(produtoId);
+}
+
+// ========================================
+// CARRINHO (localStorage) - ESCOPO GLOBAL
+// ========================================
+function obterCarrinho() {
+  try {
+    const raw = localStorage.getItem("lootGeekCarrinho");
+    const carrinho = raw ? JSON.parse(raw) : [];
+    if (!Array.isArray(carrinho)) return [];
+
+    // Normaliza dados antigos (compatibilidade com versões anteriores)
+    return carrinho
+      .filter((item) => item && typeof item === "object")
+      .map((item) => {
+        const id = item.id || "";
+        const varianteId = item.varianteId || "";
+        const quantidade = Number.isFinite(item.quantidade)
+          ? item.quantidade
+          : 0;
+        const chave = item.chave || criarChaveItemCarrinho(id, varianteId);
+        return { chave, id, varianteId, quantidade };
+      });
+  } catch {
+    return [];
+  }
+}
+
+function salvarCarrinho(carrinho) {
+  localStorage.setItem("lootGeekCarrinho", JSON.stringify(carrinho));
+}
+
+function contarItensCarrinho(carrinho) {
+  return carrinho.reduce((total, item) => total + (item.quantidade || 0), 0);
+}
+
+function atualizarContadorCarrinho(elementoContador) {
+  if (!elementoContador) return;
+  const total = contarItensCarrinho(obterCarrinho());
+  elementoContador.textContent = String(total);
+}
+
+function criarChaveItemCarrinho(produtoId, varianteId) {
+  return varianteId ? `${produtoId}::${varianteId}` : produtoId;
+}
+
+function adicionarAoCarrinho(produtoId, quantidade, varianteId) {
+  const qtd = Number.isFinite(quantidade) ? quantidade : 1;
+  const carrinho = obterCarrinho();
+
+  const chave = criarChaveItemCarrinho(produtoId, varianteId);
+
+  const existente = carrinho.find((item) => item.chave === chave);
+  if (existente) {
+    existente.quantidade += qtd;
+  } else {
+    carrinho.push({
+      chave,
+      id: produtoId,
+      varianteId: varianteId || "",
+      quantidade: qtd,
+    });
+  }
+
+  salvarCarrinho(carrinho);
+}
+
+// ========================================
+// FUNÇÕES AUXILIARES - ESCOPO GLOBAL
+// ========================================
+function formatarPrecoBRL(preco) {
+  return preco.toLocaleString("pt-BR", {
+    style: "currency",
+    currency: "BRL",
+  });
+}
+
+function escapeHTML(valor) {
+  return String(valor)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function showToast(message) {
+  // Remove existing toast
+  const existingToast = document.querySelector(".toast-notification");
+  if (existingToast) {
+    existingToast.remove();
+  }
+
+  const toast = document.createElement("div");
+  toast.className = "toast-notification";
+  toast.textContent = message;
+  document.body.appendChild(toast);
+
+  setTimeout(() => {
+    toast.classList.add("is-hiding");
+    setTimeout(() => toast.remove(), 200);
+  }, 3000);
+}
+
+function obterProdutosDaLoja() {
+  return [
+    {
+      id: "ps2",
+      nome: "PS2 + HD + 1 controle original",
+      categoria: "Consoles",
+      categoriaRotulo: "Console",
+      preco: 450.0,
+      imagem: "./img/product/ps2.png",
+      descricao:
+        "PlayStation 2 com HD e 1 controle original. Ideal para curtir clássicos.",
+      estoque: 3,
+      entrega: "Retirada/Envio",
+      garantiaDias: 30,
+      versoes: [],
+      detalhes: [
+        "Produto revisado e testado",
+        "Acompanha 1 controle original",
+        "Pronto para jogar",
+        "Garantia de 30 dias",
+      ],
+      condicao: "Usado",
+      tipoConta: "",
+      top: 9,
+      popular: 7,
+    },
+    {
+      id: "controle-ps4",
+      nome: "Controle de PS4 original",
+      categoria: "Controles",
+      categoriaRotulo: "Controle",
+      preco: 218.89,
+      imagem: "./img/product/controleps4.png",
+      descricao:
+        "Controle original de PS4. Boa pegada e compatibilidade garantida.",
+      estoque: 12,
+      entrega: "Envio",
+      garantiaDias: 30,
+      versoes: [],
+      detalhes: [
+        "Produto original",
+        "Compatível com PS4",
+        "Garantia de 30 dias",
+      ],
+      condicao: "Novo",
+      tipoConta: "",
+      top: 8,
+      popular: 9,
+    },
+    {
+      id: "pendrive-opl",
+      nome: "Pendrive com jogos OPL",
+      categoria: "Jogos",
+      categoriaRotulo: "Pendrive",
+      preco: 89.9,
+      imagem: "./img/product/pendrive.png",
+      descricao:
+        "Pendrive preparado com jogos para OPL. Prático para levar e usar.",
+      estoque: 25,
+      entrega: "Envio",
+      garantiaDias: 7,
+      versoes: [],
+      detalhes: [
+        "Pronto para usar",
+        "Compatível com OPL",
+        "Garantia de 7 dias",
+      ],
+      condicao: "Novo",
+      tipoConta: "",
+      top: 7,
+      popular: 8,
+    },
+    {
+      id: "conta-steam",
+      nome: "Conta Steam com diversos jogos",
+      categoria: "Contas digitais",
+      categoriaRotulo: "Conta",
+      preco: 199.9,
+      imagem: "./img/product/steam.png",
+      descricao:
+        "Conta Steam com biblioteca variada. Ótima para quem quer começar já jogando.",
+      estoque: 25,
+      entrega: "Entrega imediata",
+      garantiaDias: 30,
+      tags: ["Entrega imediata"],
+      versoes: [
+        { id: "privada", nome: "Conta privada", preco: 199.9 },
+        { id: "compartilhada", nome: "Conta compartilhada", preco: 149.9 },
+      ],
+      detalhes: [
+        "Entrega automática",
+        "Ativação via link",
+        "Uso em conta pessoal",
+        "Garantia de 30 dias",
+      ],
+      condicao: "",
+      tipoConta: "Conta privada",
+      top: 8,
+      popular: 7,
+    },
+    {
+      id: "canva-pro",
+      nome: "Canva PRO",
+      categoria: "Contas digitais",
+      categoriaRotulo: "Conta",
+      preco: 4.99,
+      imagem: "./img/product/canva.png",
+      descricao: "Acesso ao Canva PRO para criar designs com mais recursos.",
+      estoque: 25,
+      entrega: "Entrega imediata",
+      garantiaDias: 30,
+      tags: ["Convite Premium", "Entrega imediata"],
+      versoes: [
+        { id: "convite", nome: "Canva PRO Convite", preco: 4.99 },
+        { id: "compartilhada", nome: "Canva PRO Compartilhada", preco: 3.0 },
+      ],
+      detalhes: [
+        "Entrega automática",
+        "Ativação via Link (convite)",
+        "Uso em sua Conta Pessoal",
+        "Acesso a recursos Premium",
+        "Garantia de 30 dias",
+      ],
+      condicao: "",
+      tipoConta: "",
+      top: 6,
+      popular: 9,
+    },
+    {
+      id: "camisa-aot",
+      nome: "Camisa Anime Attack on Titan",
+      categoria: "Geek/Anime",
+      categoriaRotulo: "Camisa",
+      preco: 129.9,
+      imagem: "./img/product/camisa.png",
+      descricao:
+        "Camisa temática de Attack on Titan. Presente perfeito para fãs.",
+      estoque: 8,
+      entrega: "Envio",
+      garantiaDias: 7,
+      versoes: [
+        { id: "p", nome: "Tamanho P", preco: 129.9 },
+        { id: "m", nome: "Tamanho M", preco: 129.9 },
+        { id: "g", nome: "Tamanho G", preco: 129.9 },
+      ],
+      detalhes: [
+        "Tecido confortável",
+        "Estampa temática",
+        "Garantia de 7 dias",
+      ],
+      condicao: "Novo",
+      tipoConta: "",
+      top: 7,
+      popular: 6,
+    },
+    {
+      id: "volante-gamer",
+      nome: "Volante Gamer PC, PS, Xbox",
+      categoria: "Controles",
+      categoriaRotulo: "Controle",
+      preco: 499.9,
+      imagem: "./img/product/volante.png",
+      descricao:
+        "Volante gamer compatível com PC e consoles. Para jogos de corrida.",
+      estoque: 4,
+      entrega: "Envio",
+      garantiaDias: 30,
+      versoes: [],
+      detalhes: [
+        "Compatível PC/PS/Xbox",
+        "Bom para simulação",
+        "Garantia de 30 dias",
+      ],
+      condicao: "Usado",
+      tipoConta: "",
+      top: 9,
+      popular: 8,
+    },
+    {
+      id: "kit-gamer",
+      nome: "Kit gamer completo",
+      categoria: "Geek/Anime",
+      categoriaRotulo: "Kit",
+      preco: 119.9,
+      imagem: "./img/product/kitgamer.png",
+      descricao: "Kit gamer para completar o setup. Boa opção pra presente.",
+      estoque: 10,
+      entrega: "Envio",
+      garantiaDias: 7,
+      versoes: [],
+      detalhes: [
+        "Boa opção para presente",
+        "Completa o setup",
+        "Garantia de 7 dias",
+      ],
+      condicao: "Novo",
+      tipoConta: "",
+      top: 6,
+      popular: 7,
+    },
+  ];
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("searchInput");
   const cartCount = document.getElementById("cartCount");
@@ -14,6 +420,53 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleHomeFiltersBtn = document.getElementById("toggleHomeFiltersBtn");
   const homeFiltersPanel = document.getElementById("homeFiltersPanel");
   const homeCategoryFilters = document.getElementById("homeCategoryFilters");
+
+  // ========================================
+  // NAVEGAÇÃO GLOBAL
+  // ========================================
+  const favoritosBtn = document.getElementById("favoritosBtn");
+  const perfilBtn = document.getElementById("perfilBtn");
+  const notificacoesBtn = document.getElementById("notificacoesBtn");
+  const cartBtn = document.getElementById("cartBtn");
+
+  if (favoritosBtn) {
+    favoritosBtn.addEventListener("click", () => {
+      const usuario = obterUsuarioLogado();
+      if (!usuario) {
+        window.location.href = "login.html?redirect=favoritos.html";
+      } else {
+        window.location.href = "favoritos.html";
+      }
+    });
+  }
+
+  if (perfilBtn) {
+    perfilBtn.addEventListener("click", () => {
+      const usuario = obterUsuarioLogado();
+      if (!usuario) {
+        window.location.href = "login.html?redirect=perfil.html";
+      } else {
+        window.location.href = "perfil.html";
+      }
+    });
+  }
+
+  if (notificacoesBtn) {
+    notificacoesBtn.addEventListener("click", () => {
+      window.location.href = "notificacoes.html";
+    });
+  }
+
+  if (cartBtn) {
+    cartBtn.addEventListener("click", () => {
+      const usuario = obterUsuarioLogado();
+      if (!usuario) {
+        window.location.href = "login.html?redirect=carrinho.html";
+      } else {
+        window.location.href = "carrinho.html";
+      }
+    });
+  }
 
   const produtos = obterProdutosDaLoja();
 
@@ -53,303 +506,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // ========================================
   if (productDetail) {
     inicializarTelaDeProduto({ produtos, productDetail, cartCount });
-  }
-
-  // ========================================
-  // SEARCH FUNCTIONALITY
-  // ========================================
-  // A busca da home é controlada pelo inicializarHome
-
-  // ========================================
-  // TOAST NOTIFICATION
-  // ========================================
-  function showToast(message) {
-    // Remove existing toast
-    const existingToast = document.querySelector(".toast-notification");
-    if (existingToast) {
-      existingToast.remove();
-    }
-
-    const toast = document.createElement("div");
-    toast.className = "toast-notification";
-    toast.textContent = message;
-    document.body.appendChild(toast);
-
-    setTimeout(() => {
-      toast.classList.add("is-hiding");
-      setTimeout(() => toast.remove(), 200);
-    }, 3000);
-  }
-
-  // ========================================
-  // DADOS
-  // ========================================
-  function obterProdutosDaLoja() {
-    return [
-      {
-        id: "ps2",
-        nome: "PS2 + HD + 1 controle original",
-        categoria: "Consoles",
-        categoriaRotulo: "Console",
-        preco: 450.0,
-        imagem: "./img/product/ps2.png",
-        descricao:
-          "PlayStation 2 com HD e 1 controle original. Ideal para curtir clássicos.",
-        estoque: 3,
-        entrega: "Retirada/Envio",
-        garantiaDias: 30,
-        versoes: [],
-        detalhes: [
-          "Produto revisado e testado",
-          "Acompanha 1 controle original",
-          "Pronto para jogar",
-          "Garantia de 30 dias",
-        ],
-        condicao: "Usado",
-        tipoConta: "",
-        top: 9,
-        popular: 7,
-      },
-      {
-        id: "controle-ps4",
-        nome: "Controle de PS4 original",
-        categoria: "Controles",
-        categoriaRotulo: "Controle",
-        preco: 218.89,
-        imagem: "./img/product/controleps4.png",
-        descricao:
-          "Controle original de PS4. Boa pegada e compatibilidade garantida.",
-        estoque: 12,
-        entrega: "Envio",
-        garantiaDias: 30,
-        versoes: [],
-        detalhes: [
-          "Produto original",
-          "Compatível com PS4",
-          "Garantia de 30 dias",
-        ],
-        condicao: "Novo",
-        tipoConta: "",
-        top: 8,
-        popular: 9,
-      },
-      {
-        id: "pendrive-opl",
-        nome: "Pendrive com jogos OPL",
-        categoria: "Jogos",
-        categoriaRotulo: "Pendrive",
-        preco: 89.9,
-        imagem: "./img/product/pendrive.png",
-        descricao:
-          "Pendrive preparado com jogos para OPL. Prático para levar e usar.",
-        estoque: 25,
-        entrega: "Envio",
-        garantiaDias: 7,
-        versoes: [],
-        detalhes: [
-          "Pronto para usar",
-          "Compatível com OPL",
-          "Garantia de 7 dias",
-        ],
-        condicao: "Novo",
-        tipoConta: "",
-        top: 7,
-        popular: 8,
-      },
-      {
-        id: "conta-steam",
-        nome: "Conta Steam com diversos jogos",
-        categoria: "Contas digitais",
-        categoriaRotulo: "Conta",
-        preco: 199.9,
-        imagem: "./img/product/steam.png",
-        descricao:
-          "Conta Steam com biblioteca variada. Ótima para quem quer começar já jogando.",
-        estoque: 25,
-        entrega: "Entrega imediata",
-        garantiaDias: 30,
-        tags: ["Entrega imediata"],
-        versoes: [
-          { id: "privada", nome: "Conta privada", preco: 199.9 },
-          { id: "compartilhada", nome: "Conta compartilhada", preco: 149.9 },
-        ],
-        detalhes: [
-          "Entrega automática",
-          "Ativação via link",
-          "Uso em conta pessoal",
-          "Garantia de 30 dias",
-        ],
-        condicao: "",
-        tipoConta: "Conta privada",
-        top: 8,
-        popular: 7,
-      },
-      {
-        id: "canva-pro",
-        nome: "Canva PRO",
-        categoria: "Contas digitais",
-        categoriaRotulo: "Conta",
-        preco: 4.99,
-        imagem: "./img/product/canva.png",
-        descricao: "Acesso ao Canva PRO para criar designs com mais recursos.",
-        estoque: 25,
-        entrega: "Entrega imediata",
-        garantiaDias: 30,
-        tags: ["Convite Premium", "Entrega imediata"],
-        versoes: [
-          { id: "convite", nome: "Canva PRO Convite", preco: 4.99 },
-          { id: "compartilhada", nome: "Canva PRO Compartilhada", preco: 3.0 },
-        ],
-        detalhes: [
-          "Entrega automática",
-          "Ativação via Link (convite)",
-          "Uso em sua Conta Pessoal",
-          "Acesso a recursos Premium",
-          "Garantia de 30 dias",
-        ],
-        condicao: "",
-        tipoConta: "Conta compartilhada",
-        top: 6,
-        popular: 9,
-      },
-      {
-        id: "camisa-aot",
-        nome: "Camisa Anime Attack on Titan",
-        categoria: "Geek/Anime",
-        categoriaRotulo: "Camisa",
-        preco: 129.9,
-        imagem: "./img/product/camisa.png",
-        descricao:
-          "Camisa temática de Attack on Titan. Presente perfeito para fãs.",
-        estoque: 8,
-        entrega: "Envio",
-        garantiaDias: 7,
-        versoes: [
-          { id: "p", nome: "Tamanho P", preco: 129.9 },
-          { id: "m", nome: "Tamanho M", preco: 129.9 },
-          { id: "g", nome: "Tamanho G", preco: 129.9 },
-        ],
-        detalhes: [
-          "Tecido confortável",
-          "Estampa temática",
-          "Garantia de 7 dias",
-        ],
-        condicao: "Novo",
-        tipoConta: "",
-        top: 7,
-        popular: 6,
-      },
-      {
-        id: "volante-gamer",
-        nome: "Volante Gamer PC, PS, Xbox",
-        categoria: "Controles",
-        categoriaRotulo: "Controle",
-        preco: 499.9,
-        imagem: "./img/product/volante.png",
-        descricao:
-          "Volante gamer compatível com PC e consoles. Para jogos de corrida.",
-        estoque: 4,
-        entrega: "Envio",
-        garantiaDias: 30,
-        versoes: [],
-        detalhes: [
-          "Compatível PC/PS/Xbox",
-          "Bom para simulação",
-          "Garantia de 30 dias",
-        ],
-        condicao: "Usado",
-        tipoConta: "",
-        top: 9,
-        popular: 8,
-      },
-      {
-        id: "kit-gamer",
-        nome: "Kit gamer completo",
-        categoria: "Geek/Anime",
-        categoriaRotulo: "Kit",
-        preco: 119.9,
-        imagem: "./img/product/kitgamer.png",
-        descricao: "Kit gamer para completar o setup. Boa opção pra presente.",
-        estoque: 10,
-        entrega: "Envio",
-        garantiaDias: 7,
-        versoes: [],
-        detalhes: [
-          "Boa opção para presente",
-          "Completa o setup",
-          "Garantia de 7 dias",
-        ],
-        condicao: "Novo",
-        tipoConta: "",
-        top: 6,
-        popular: 7,
-      },
-    ];
-  }
-
-  // ========================================
-  // CARRINHO (localStorage)
-  // ========================================
-  function obterCarrinho() {
-    try {
-      const raw = localStorage.getItem("lootGeekCarrinho");
-      const carrinho = raw ? JSON.parse(raw) : [];
-      if (!Array.isArray(carrinho)) return [];
-
-      // Normaliza dados antigos (compatibilidade com versões anteriores)
-      return carrinho
-        .filter((item) => item && typeof item === "object")
-        .map((item) => {
-          const id = item.id || "";
-          const varianteId = item.varianteId || "";
-          const quantidade = Number.isFinite(item.quantidade)
-            ? item.quantidade
-            : 0;
-          const chave = item.chave || criarChaveItemCarrinho(id, varianteId);
-          return { chave, id, varianteId, quantidade };
-        });
-    } catch {
-      return [];
-    }
-  }
-
-  function salvarCarrinho(carrinho) {
-    localStorage.setItem("lootGeekCarrinho", JSON.stringify(carrinho));
-  }
-
-  function contarItensCarrinho(carrinho) {
-    return carrinho.reduce((total, item) => total + (item.quantidade || 0), 0);
-  }
-
-  function atualizarContadorCarrinho(elementoContador) {
-    if (!elementoContador) return;
-    const total = contarItensCarrinho(obterCarrinho());
-    elementoContador.textContent = String(total);
-  }
-
-  function criarChaveItemCarrinho(produtoId, varianteId) {
-    return varianteId ? `${produtoId}::${varianteId}` : produtoId;
-  }
-
-  function adicionarAoCarrinho(produtoId, quantidade, varianteId) {
-    const qtd = Number.isFinite(quantidade) ? quantidade : 1;
-    const carrinho = obterCarrinho();
-
-    const chave = criarChaveItemCarrinho(produtoId, varianteId);
-
-    const existente = carrinho.find((item) => item.chave === chave);
-    if (existente) {
-      existente.quantidade += qtd;
-    } else {
-      carrinho.push({
-        chave,
-        id: produtoId,
-        varianteId: varianteId || "",
-        quantidade: qtd,
-      });
-    }
-
-    salvarCarrinho(carrinho);
   }
 
   // ========================================
@@ -464,6 +620,21 @@ document.addEventListener("DOMContentLoaded", () => {
       if (!btn) return;
 
       e.preventDefault();
+
+      // Verificar se usuário está logado
+      const usuario = obterUsuarioLogado();
+      if (!usuario) {
+        window.location.href =
+          "login.html?redirect=" +
+          encodeURIComponent(window.location.pathname + window.location.search);
+        return;
+      }
+
+      const item = btn.closest(".product-item, .col-6, .col-md-4, .col-lg-3");
+      const produtoId =
+        item?.dataset?.produtoId || btn.dataset?.removerFavorito;
+      if (!produtoId) return;
+
       const icon = btn.querySelector("i");
       if (!icon) return;
 
@@ -471,6 +642,7 @@ document.addEventListener("DOMContentLoaded", () => {
         icon.classList.remove("bi-heart");
         icon.classList.add("bi-heart-fill");
         btn.classList.add("active");
+        adicionarAosFavoritos(produtoId);
         showToast("Adicionado aos favoritos.");
         return;
       }
@@ -478,6 +650,7 @@ document.addEventListener("DOMContentLoaded", () => {
       icon.classList.remove("bi-heart-fill");
       icon.classList.add("bi-heart");
       btn.classList.remove("active");
+      removerDosFavoritos(produtoId);
       showToast("Removido dos favoritos");
     });
   }
@@ -553,6 +726,12 @@ document.addEventListener("DOMContentLoaded", () => {
         )}</div>`
       : "";
 
+    // Verificar se está nos favoritos
+    const favoritos = obterFavoritos();
+    const ehFavorito = favoritos.includes(produto.id);
+    const classeAtiva = ehFavorito ? "active" : "";
+    const icone = ehFavorito ? "bi-heart-fill" : "bi-heart";
+
     return `
       <div class="col-6 col-md-4 col-lg-3 product-item" data-produto-id="${escapeHTML(
         produto.id
@@ -562,8 +741,8 @@ document.addEventListener("DOMContentLoaded", () => {
             <img src="${escapeHTML(
               produto.imagem
             )}" class="card-img-top" alt="${escapeHTML(produto.nome)}" />
-            <button class="btn btn-wishlist position-absolute" type="button">
-              <i class="bi bi-heart"></i>
+            <button class="btn btn-wishlist position-absolute ${classeAtiva}" type="button">
+              <i class="bi ${icone}"></i>
             </button>
           </div>
           <div class="card-body">

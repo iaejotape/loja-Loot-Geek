@@ -27,10 +27,6 @@
           <span class="logo-icon logo-icon--image">
             <img src="./img/logo.svg" alt="logo" />
           </span>
-          <span class="d-none d-sm-inline-flex flex-column lh-1">
-            <span class="logo-title">LOOT</span>
-            <span class="logo-subtitle">GEEK</span>
-          </span>
         </a>
 
         <div class="search-box position-relative flex-grow-1">
@@ -44,13 +40,21 @@
         </div>
 
         <div class="d-flex align-items-center gap-2">
-          <button class="btn btn-icon" type="button" aria-label="Favoritos">
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label="Favoritos"
+            id="favoritosBtn"
+          >
             <i class="bi bi-heart"></i>
           </button>
-          <button class="btn btn-icon" type="button" aria-label="Saldo">
-            <i class="bi bi-wallet2"></i>
-          </button>
-          <button class="btn btn-icon" type="button" aria-label="Perfil">
+
+          <button
+            class="btn btn-icon"
+            type="button"
+            aria-label="Perfil"
+            id="perfilBtn"
+          >
             <i class="bi bi-person-circle"></i>
           </button>
 
@@ -58,6 +62,7 @@
             class="btn btn-icon position-relative"
             type="button"
             aria-label="Notificações"
+            id="notificacoesBtn"
           >
             <i class="bi bi-bell"></i>
             <span class="badge-notification">3</span>
@@ -87,6 +92,84 @@
         aria-label="Detalhes do produto"
       ></section>
     </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div class="footer-content">
+        <div class="row g-4">
+          <div class="col-12 col-md-4">
+            <div class="footer-brand mb-3">
+              <span class="logo-icon logo-icon--image">
+                <img src="./img/logo.svg" alt="logo" />
+              </span>
+            </div>
+            <p class="footer-description">
+              Sua loja confiável de produtos digitais e games. Qualidade e
+              entrega rápida.
+            </p>
+          </div>
+
+          <div class="col-6 col-md-2">
+            <h6 class="footer-title">Navegação</h6>
+            <ul class="footer-links">
+              <li><a href="index.html">Início</a></li>
+              <li><a href="index.html#produtos">Catálogo</a></li>
+              <li><a href="favoritos.html">Favoritos</a></li>
+              <li><a href="perfil.html">Minha Conta</a></li>
+            </ul>
+          </div>
+
+          <div class="col-6 col-md-2">
+            <h6 class="footer-title">Suporte</h6>
+            <ul class="footer-links">
+              <li><a href="#faq">FAQ</a></li>
+              <li><a href="#ajuda">Central de Ajuda</a></li>
+              <li><a href="#contato">Fale Conosco</a></li>
+            </ul>
+          </div>
+
+          <div class="col-12 col-md-4">
+            <h6 class="footer-title">Atendimento</h6>
+            <p class="footer-text mb-2">
+              <i class="bi bi-whatsapp me-2"></i>
+              WhatsApp: (89) 99432-5080
+            </p>
+            <p class="footer-text mb-2">
+              <i class="bi bi-envelope me-2"></i>
+              contato@lootgeek.com
+            </p>
+            <p class="footer-text">
+              <i class="bi bi-clock me-2"></i>
+              Seg a Sex: 9h às 18h
+            </p>
+          </div>
+        </div>
+
+        <div class="footer-bottom">
+          <div
+            class="d-flex flex-column flex-md-row justify-content-between align-items-center gap-3"
+          >
+            <p class="footer-copyright mb-0">
+              © 2025 Loot Geek. Todos os direitos reservados.
+            </p>
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-shield-check text-success"></i>
+              <span class="footer-text">Compra Segura</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+    <!-- WhatsApp Floating Button -->
+    <a
+      href="https://wa.me/5589994325080"
+      target="_blank"
+      class="whatsapp-float"
+      aria-label="WhatsApp"
+    >
+      <i class="bi bi-whatsapp"></i>
+    </a>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
     <script src="script.js"></script>
