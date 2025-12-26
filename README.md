@@ -34,8 +34,7 @@ A home apresenta todos os produtos disponíveis com sistema de busca, filtros po
 
 <!-- Adicione a imagem da página inicial aqui -->
 
-![Página Inicial](caminho/para/imagem-home.png)
-
+![Página Inicial](https://github.com/user-attachments/assets/1b646341-76e1-49e5-98e4-af6c96ecb3e1)
 ---
 
 ### 📦 Página de Detalhes do Produto
@@ -44,7 +43,7 @@ Visualização completa do produto com opções de variantes, descrição detalh
 
 <!-- Adicione a imagem da página de produto aqui -->
 
-![Página de Produto](caminho/para/imagem-produto.png)
+![Página de Produto](https://github.com/user-attachments/assets/5cacb06b-83e4-44a6-809b-f6b3afe170e4)
 
 ---
 
@@ -56,7 +55,7 @@ Interface limpa e moderna para os usuários acessarem suas contas.
 
 <!-- Adicione a imagem da página de login aqui -->
 
-![Página de Login](caminho/para/imagem-login.png)
+![Página de Login](https://github.com/user-attachments/assets/b4113620-5bc7-4842-8e85-c3d4976cabb1)
 
 #### Registro
 
@@ -64,7 +63,7 @@ Formulário de cadastro intuitivo para novos usuários.
 
 <!-- Adicione a imagem da página de registro aqui -->
 
-![Página de Registro](caminho/para/imagem-registro.png)
+![Página de Registro](https://github.com/user-attachments/assets/348c7d59-62a1-4bfa-b1fa-8ace1b289354)
 
 ---
 
@@ -74,7 +73,7 @@ Gerenciamento completo dos itens selecionados, com controle de quantidade, cálc
 
 <!-- Adicione a imagem da página de carrinho aqui -->
 
-![Página de Carrinho](caminho/para/imagem-carrinho.png)
+![Página de Carrinho](https://github.com/user-attachments/assets/5b105f34-fe93-4128-941e-303f8ae8f4ef)
 
 ---
 
@@ -84,7 +83,7 @@ Lista personalizada com todos os produtos marcados como favoritos pelo usuário.
 
 <!-- Adicione a imagem da página de favoritos aqui -->
 
-![Página de Favoritos](caminho/para/imagem-favoritos.png)
+![Página de Favoritos](https://github.com/user-attachments/assets/71a48079-5519-46b8-a242-bf877d220349)
 
 ---
 
@@ -94,7 +93,7 @@ Dashboard pessoal com informações do usuário, estatísticas e ações rápida
 
 <!-- Adicione a imagem da página de perfil aqui -->
 
-![Página de Perfil](caminho/para/imagem-perfil.png)
+![Página de Perfil](https://github.com/user-attachments/assets/eb5233d1-099a-47be-ac31-d8dd6b7a73ef)
 
 ---
 
@@ -104,7 +103,7 @@ Centro de notificações sobre pedidos, promoções, estoque e atualizações da
 
 <!-- Adicione a imagem da página de notificações aqui -->
 
-![Página de Notificações](caminho/para/imagem-notificacoes.png)
+![Página de Notificações](https://github.com/user-attachments/assets/2aea41ec-df50-4628-9044-9c9f1eb65a06)
 
 ---
 
@@ -114,7 +113,7 @@ O site se adapta perfeitamente a todos os dispositivos: desktop, tablet e mobile
 
 <!-- Adicione imagens mostrando o site em diferentes dispositivos -->
 
-![Responsividade](caminho/para/imagem-responsivo.png)
+![Responsividade](https://github.com/user-attachments/assets/e1777212-6a6b-4ae9-bffa-be6b3bb31fe9)
 
 ---
 
